@@ -5,7 +5,8 @@ import com.booleanuk.api.bagels.view.ProductsRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("products")
@@ -13,12 +14,12 @@ public class ProductController {
 	ProductsRepository prods = new ProductsRepository();
 
 	@GetMapping
-	public ArrayList<Product> getAll(@RequestBody(required = false) String category){
-		if (category == null){
+	public List<Product> getAll(@RequestParam(required = false) Optional<String> category){
+		if (category.isEmpty()){
 			return prods.getAll();
 		}
 
-		return prods.getAllFromCategory(category);
+		return prods.getAllFromCategory(category.get());
 	}
 
 	@PostMapping

@@ -5,12 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 
 public class ProductsRepository {
-	private ArrayList<Product> products;
+	private List<Product> products;
 
 	public ProductsRepository() {
 		products = new ArrayList<Product>();
@@ -33,14 +34,15 @@ public class ProductsRepository {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
-	public ArrayList<Product> getAll(){
+	public List<Product> getAll(){
 		return products;
 	}
 
-	public ArrayList<Product> getAllFromCategory(String category){
-		ArrayList<Product> prods = products.stream()
+	public List<Product> getAllFromCategory(String category){
+		List<Product> prods = products.stream()
 				.filter(product -> product.getCategory().equals(category))
-				.collect(Collectors.toCollection(ArrayList::new));
+				.toList();
+
 
 		if (prods.isEmpty()){
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "not found");
@@ -60,7 +62,7 @@ public class ProductsRepository {
 	}
 
 	public Product putById(int id, Product product){
-		Optional<Product> OP= products.stream()
+		Optional<Product> OP = products.stream()
 				.filter(product1 -> product1.getId() == id)
 				.findFirst();
 
@@ -70,7 +72,7 @@ public class ProductsRepository {
 		Product prodToChange = OP.get();
 		// check if another exists with same name
 		boolean anotherExists = products.stream()
-				.anyMatch(product1 -> product1.getId() != id && prodToChange.getName().equals(product1.getName()));
+				.anyMatch(product1 -> product1.getId() != id && prodToChange.getName().equalsIgnoreCase(product1.getName()));
 
 		if(anotherExists){
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "another item has same name");
